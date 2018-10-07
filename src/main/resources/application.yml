@@ -1,0 +1,47 @@
+spring:
+  jackson:
+    default-property-inclusion: non_null
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  profiles:
+    active: test
+  datasource:
+    druid:
+      initial-size: 5
+      max-active: 50
+      min-idle: 5
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      stat-view-servlet:
+        reset-enable: false
+      filter:
+        wall:
+          enabled: true
+          encoding:
+            enabled: true
+          stat:
+            log-slow-sql: true
+            slow-sql-millis: 1000
+            merge-sql: false
+    type: com.alibaba.druid.pool.DruidDataSource
+mybatis:
+  typeAliasesPackage: com.hs.reptilian.model
+  mapperLocations: classpath:mappers/**.xml
+  configuration:
+      map-underscore-to-camel-case: true
+server:
+  port: 8081
+
+sync:
+  hs:
+    # 1分钟
+#    cron: 0 0/1 * * * ?
+    # 30s
+    cron: 0/10 * * * * ?
