@@ -20,29 +20,24 @@ import java.util.Date;
 @Slf4j
 public class ReptilianRunnable implements Runnable {
 
-
-    private ReptilianList reptilianList;
-
     private int MAX_RETRY = 3;
 
-    private ThreadPoolTaskExecutor taskExecutor;
+    private UrlConstant.Dysj dysj;
 
-    public ReptilianRunnable(ReptilianList reptilianList, ThreadPoolTaskExecutor taskExecutor) {
-        this.reptilianList = reptilianList;
-        this.taskExecutor = taskExecutor;
+    public ReptilianRunnable(UrlConstant.Dysj dysj) {
+        this.dysj = dysj;
     }
 
     @Override
     public void run()  {
         try {
-            log.info(Thread.currentThread().getName() + "  start........................." + new Date().toLocaleString());
-            String url = MessageFormatUtil.format(UrlConstant.Dysj.getUrl(reptilianList.getCity()), URLEncoder.encode(reptilianList.getVillage(), "UTF-8"));
-            Document document = Jsoup.connect(url)
+            log.info(Thread.currentThread().getName() + "  start........................." + new Date().toLocaleString() + "----" + dysj.name());
+            Document document = Jsoup.connect(dysj.getUrl())
                     .header(ProxyDemo.ProxyHeadKey, ProxyDemo.ProxyHeadVal).proxy(ProxyDemo.proxy)
                     .timeout(SysConstant.TIME_OUT)
                     .execute().parse();
             if(document.body().text().contains("很抱歉，没有找到与")) {
-                log.info(reptilianList.getVillage() + "---" + reptilianList.getCity() + "---未找到房源");
+                log.info(dysj.name() + "---未找到房源");
                 return;
             }
 
@@ -51,9 +46,8 @@ public class ReptilianRunnable implements Runnable {
                 // TODO 异常重试
                 HsReportData hsReportData = buidHsReportData(element.getElementsByTag("a").attr("href"));
                 if(hsReportData != null) {
-                    hsReportData.setCity(reptilianList.getCity());
+                    hsReportData.setCity(dysj.getCity());
                     DankeUtil.report(hsReportData);
-                    System.out.println(hsReportData + " xxx  " + reptilianList);
                 }
             }
 

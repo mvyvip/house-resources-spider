@@ -4,28 +4,35 @@ public interface UrlConstant {
 
     enum Dysj {
 
-        GZ("http://gz.01fy.cn/rent/list_2_0_0_0-0_0_0-0_0_0_0_0_0_0_2_0_1_{0}.html"),
+        GZ("http://gz.01fy.cn/rent/list_2_0_0_0-0_0_0-0_0_0_0_0_0_0_2_0_1_.html", "广州市"),
 
-        BJ("http://bj.01fy.cn/rent/list_2_0_0_0-0_0_0-0_0_0_0_0_0_0_2_0_1_{0}.html"),
+        BJ("http://bj.01fy.cn/rent/list_2_0_0_0-0_0_0-0_0_0_0_0_0_0_2_0_1_.html", "北京市"),
 
-        NJ("http://nj.01fy.cn/rent/list_2_0_0_0-0_0_0-0_0_0_0_0_0_0_2_0_1_{0}.html"),
+        NJ("http://nj.01fy.cn/rent/list_2_0_0_0-0_0_0-0_0_0_0_0_0_0_2_0_1_.html", "南京市"),
 
-        SH("http://sh.01fy.cn/rent/list_2_0_0_0-0_0_0-0_0_0_0_0_0_0_2_0_1_{0}.html"),
+        SH("http://sh.01fy.cn/rent/list_2_0_0_0-0_0_0-0_0_0_0_0_0_0_2_0_1_.html", "上海市"),
 
-        SZ("http://sz.01fy.cn/rent/list_2_0_0_0-0_0_0-0_0_0_0_0_0_0_2_0_1_{0}.html"),
+        SZ("http://sz.01fy.cn/rent/list_2_0_0_0-0_0_0-0_0_0_0_0_0_0_2_0_1_.html", "深圳市"),
 
-        TJ("http://tj.01fy.cn/rent/list_2_0_0_0-0_0_0-0_0_0_0_0_0_0_2_0_1_{0}.html"),
+        TJ("http://tj.01fy.cn/rent/list_2_0_0_0-0_0_0-0_0_0_0_0_0_0_2_0_1_.html", "天津市"),
 
         ;
 
         private String url;
 
-        Dysj(String url) {
+        private String city;
+
+        Dysj(String url, String city) {
             this.url = url;
+            this.city = city;
         }
 
         public String getUrl() {
             return url;
+        }
+
+        public String getCity() {
+            return city;
         }
 
         public static String getUrl(String city) {

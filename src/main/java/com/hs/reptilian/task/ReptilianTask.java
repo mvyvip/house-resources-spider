@@ -1,5 +1,6 @@
 package com.hs.reptilian.task;
 
+import com.hs.reptilian.constant.UrlConstant;
 import com.hs.reptilian.model.ReptilianList;
 import com.hs.reptilian.service.ReptilianService;
 import com.hs.reptilian.task.runnable.ReptilianRunnable;
@@ -43,12 +44,12 @@ public class ReptilianTask {
         } else {
             flag =true;
         }
-        System.out.println(new Date().toLocaleString());
-        Collections.shuffle(reptilianListList);
-        for (ReptilianList reptilianList : reptilianListList) {
-            System.out.println("reptilianList: " + reptilianList);
-            taskExecutor.execute(new ReptilianRunnable(reptilianList, taskExecutor));
+
+        for (UrlConstant.Dysj dysj : UrlConstant.Dysj.values()) {
+            taskExecutor.execute(new ReptilianRunnable(dysj));
         }
+
+
     }
 
 }

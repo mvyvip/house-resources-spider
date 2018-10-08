@@ -26,34 +26,34 @@ public class DankeUtil {
         Integer compounId = serchCompoundId(hsReportData.getCity(), hsReportData.getCompoundName());
         if(compounId != null) {
             try {
-                Connection.Response execute = Jsoup.connect("https://www.dankegongyu.com/u/house-resource/insert")
-                        .method(Connection.Method.POST)
-                        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-                        .header("Cookie", cookie)
-                        .userAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 11_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E302 MicroMessenger/6.7.3(0x16070321) NetType/WIFI Language/zh_CN")
-                        .ignoreContentType(true)
-                        .timeout(10000)
-                        .header("Content-Type", "application/x-www-form-urlencoded")
-                        .data("_token", token)
-
-//                    .data("city", "广州市")
-//                .data("doorplate", "1")
-//                .data("landlord_name", "测试不用管2")
-//                .data("landlord_phone", "18027354329")
-//                .data("xiaoqu_id", "47586")
-
-
-                        .data("city", hsReportData.getCity())
-                        .data("doorplate", "1")
-                        .data("landlord_name", hsReportData.getUsername())
-                        .data("landlord_phone", hsReportData.getMobile().trim())
-//                        .data("landlord_phone", "15261822164")
-                        .data("xiaoqu_id", compounId.toString())
-                        .execute();
+//                Connection.Response execute = Jsoup.connect("https://www.dankegongyu.com/u/house-resource/insert")
+//                        .method(Connection.Method.POST)
+//                        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+//                        .header("Cookie", cookie)
+//                        .userAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 11_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E302 MicroMessenger/6.7.3(0x16070321) NetType/WIFI Language/zh_CN")
+//                        .ignoreContentType(true)
+//                        .timeout(10000)
+//                        .header("Content-Type", "application/x-www-form-urlencoded")
+//                        .data("_token", token)
+//
+////                    .data("city", "广州市")
+////                .data("doorplate", "1")
+////                .data("landlord_name", "测试不用管2")
+////                .data("landlord_phone", "18027354329")
+////                .data("xiaoqu_id", "47586")
+//
+//
+//                        .data("city", hsReportData.getCity())
+//                        .data("doorplate", "1")
+//                        .data("landlord_name", hsReportData.getUsername())
+//                        .data("landlord_phone", hsReportData.getMobile().trim())
+////                        .data("landlord_phone", "15261822164")
+//                        .data("xiaoqu_id", compounId.toString())
+//                        .execute();
                 System.err.println("x>>  " + hsReportData);
-                if(execute.body().contains("房源已成功提交")) {
-                    log.info("成功提交：" + hsReportData);
-                }
+//                if(execute.body().contains("房源已成功提交")) {
+//                    log.info("成功提交：" + hsReportData);
+//                }
 //                System.err.println(execute.body());
             } catch (Exception e) {
 //                e.printStackTrace();
