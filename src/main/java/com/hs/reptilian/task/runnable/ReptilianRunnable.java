@@ -1,20 +1,20 @@
 package com.hs.reptilian.task.runnable;
 
 import com.hs.reptilian.ProxyDemo;
-import com.hs.reptilian.constant.SysConstant;
+import com.hs.reptilian.constant.SystemConstant;
 import com.hs.reptilian.constant.UrlConstant;
 import com.hs.reptilian.model.HsReportData;
-import com.hs.reptilian.model.ReptilianList;
 import com.hs.reptilian.util.DankeUtil;
-import com.hs.reptilian.util.MessageFormatUtil;
+import com.hs.reptilian.util.ProxyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.net.URLEncoder;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.SocketAddress;
 import java.util.Date;
 
 @Slf4j
@@ -24,48 +24,54 @@ public class ReptilianRunnable implements Runnable {
 
     private UrlConstant.Dysj dysj;
 
-    public ReptilianRunnable(UrlConstant.Dysj dysj) {
+    private ProxyUtil proxyUtil;
+
+    public ReptilianRunnable(UrlConstant.Dysj dysj, ProxyUtil proxyUtil) {
         this.dysj = dysj;
+        this.proxyUtil = proxyUtil;
+    }
+
+    private Document getMainPage() {
+        try {
+            Document document = Jsoup.connect(dysj.getUrl())
+                    .proxy(proxyUtil.getProxy())
+                    .timeout(SystemConstant.TIME_OUT)
+                    .execute().parse();
+            return document;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return getMainPage();
+        }
     }
 
     @Override
     public void run()  {
-        try {
             log.info(Thread.currentThread().getName() + "  start........................." + new Date().toLocaleString() + "----" + dysj.name());
-            Document document = Jsoup.connect(dysj.getUrl())
-                    .header(ProxyDemo.ProxyHeadKey, ProxyDemo.ProxyHeadVal).proxy(ProxyDemo.proxy)
-                    .timeout(SysConstant.TIME_OUT)
-                    .execute().parse();
-            if(document.body().text().contains("很抱歉，没有找到与")) {
-                log.info(dysj.name() + "---未找到房源");
-                return;
-            }
-
+            Document document = getMainPage();
             Elements elements = document.getElementById("list").getElementsByTag("li");
             for (Element element : elements) {
                 // TODO 异常重试
                 HsReportData hsReportData = buidHsReportData(element.getElementsByTag("a").attr("href"));
+                System.out.println(">>>> " + hsReportData);
                 if(hsReportData != null) {
                     hsReportData.setCity(dysj.getCity());
                     DankeUtil.report(hsReportData);
                 }
             }
 
-        } catch (Exception e) {
-            log.error("初始化房源信息出错："  + e.getMessage());
-        }
             log.info(Thread.currentThread().getName() + "  end........................." + new Date().toLocaleString());
     }
 
     private HsReportData buidHsReportData(String url) {
         try {
+            Proxy proxy = proxyUtil.getProxy();
             Document document = Jsoup.connect("http://gz.01fy.cn/rent/" + url)
-                    .header(ProxyDemo.ProxyHeadKey, ProxyDemo.ProxyHeadVal).proxy(ProxyDemo.proxy)
+                    .proxy(proxy)
                     .timeout(20000)
                     .execute().parse();
-//        System.out.println(response.body());
             if(document.body().text().contains("请您输入验证码")) {
                 log.info("该代理已被禁，重试中");
+                proxyUtil.remove(proxy);
                 return buidHsReportData(url);
             }
 
@@ -93,11 +99,8 @@ public class ReptilianRunnable implements Runnable {
             }
             return hsReportData;
         } catch (Exception e) {
-            if(MAX_RETRY > 0 ){
-                --MAX_RETRY;
-                return buidHsReportData(url);
-            }
-            return null;
+            log.error("初始化上报数据出错：" + e.getMessage());
+            return buidHsReportData(url);
         }
     }
 

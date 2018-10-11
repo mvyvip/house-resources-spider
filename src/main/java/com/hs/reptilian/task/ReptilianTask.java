@@ -4,17 +4,20 @@ import com.hs.reptilian.constant.UrlConstant;
 import com.hs.reptilian.model.ReptilianList;
 import com.hs.reptilian.service.ReptilianService;
 import com.hs.reptilian.task.runnable.ReptilianRunnable;
+import com.hs.reptilian.util.ProxyUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 
+@Slf4j
 @Component
 public class ReptilianTask {
 
@@ -24,32 +27,19 @@ public class ReptilianTask {
     @Autowired
     private ThreadPoolTaskExecutor taskExecutor;
 
-    private List<ReptilianList> reptilianListList;
-
-
-    private static boolean flag = false;
-
-    @PostConstruct
-    public void init() {
-        this.reptilianListList = reptilianService.findAll();
-    }
+    @Autowired
+    private ProxyUtil proxyUtil;
 
     /**
      * 定时爬取第一时间房源网
      */
+    @Async
     @Scheduled(cron = "${sync.hs.cron}")
     public void syncHsWithDysj() {
-        if(flag) {
-            return;
-        } else {
-            flag =true;
-        }
-
+        log.info("开始爬取第一时间数据");
         for (UrlConstant.Dysj dysj : UrlConstant.Dysj.values()) {
-            taskExecutor.execute(new ReptilianRunnable(dysj));
+            taskExecutor.execute(new ReptilianRunnable(dysj, proxyUtil));
         }
-
-
     }
 
 }
