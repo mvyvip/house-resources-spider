@@ -1,6 +1,7 @@
 package com.hs.reptilian.config;
 
 
+import java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.context.annotation.Bean;
@@ -14,9 +15,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class ThreadPoolExecutorConfiguration {
 
     // 线程池维护线程的最少数量
-    private int corePoolSize = 5;
+    private int corePoolSize = 50;
     // 线程池维护线程的最大数量
-    private int maxPoolSize = 15;
+    private int maxPoolSize = 150;
     // 缓存队列
     private int queueCapacity = 500;
 
@@ -26,7 +27,7 @@ public class ThreadPoolExecutorConfiguration {
         threadPoolTaskExecutor.setCorePoolSize(corePoolSize);
         threadPoolTaskExecutor.setMaxPoolSize(maxPoolSize);
         threadPoolTaskExecutor.setQueueCapacity(queueCapacity);
-        threadPoolTaskExecutor.setRejectedExecutionHandler(new RecommitRejected());
+        threadPoolTaskExecutor.setRejectedExecutionHandler(new CallerRunsPolicy());
         return threadPoolTaskExecutor;
     }
 

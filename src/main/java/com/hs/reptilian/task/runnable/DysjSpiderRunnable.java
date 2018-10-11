@@ -7,6 +7,7 @@ import com.hs.reptilian.model.HsReportData;
 import com.hs.reptilian.util.DankeUtil;
 import com.hs.reptilian.util.ProxyUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -18,7 +19,7 @@ import java.net.SocketAddress;
 import java.util.Date;
 
 @Slf4j
-public class ReptilianRunnable implements Runnable {
+public class DysjSpiderRunnable implements Runnable {
 
     private int MAX_RETRY = 3;
 
@@ -26,7 +27,7 @@ public class ReptilianRunnable implements Runnable {
 
     private ProxyUtil proxyUtil;
 
-    public ReptilianRunnable(UrlConstant.Dysj dysj, ProxyUtil proxyUtil) {
+    public DysjSpiderRunnable(UrlConstant.Dysj dysj, ProxyUtil proxyUtil) {
         this.dysj = dysj;
         this.proxyUtil = proxyUtil;
     }
@@ -91,7 +92,7 @@ public class ReptilianRunnable implements Runnable {
                     hsReportData.setUsername(text.split("联系人： ")[1]);
                 } else if(text.contains("联系电话")) {
                     String mobile = text.split("联系电话： ")[1].replaceAll(" ", "");
-                    if(mobile.contains("该房源来自58同城网")) {
+                    if(mobile.contains("该房源来自58同城网") || mobile.contains("隐藏电话")) {
                         return null;
                     }
                     hsReportData.setMobile(mobile);
@@ -99,6 +100,13 @@ public class ReptilianRunnable implements Runnable {
             }
             return hsReportData;
         } catch (Exception e) {
+            if(e instanceof HttpStatusException) {
+                HttpStatusException httpStatusException = (HttpStatusException) e;
+                log.info("初始化数据出错：" + httpStatusException.getStatusCode() + "--" + httpStatusException.getUrl() + "---" + httpStatusException.getMessage());
+                if(httpStatusException.getStatusCode() == 404) {
+                    return null;
+                }
+            }
             log.error("初始化上报数据出错：" + e.getMessage());
             return buidHsReportData(url);
         }

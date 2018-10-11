@@ -50,9 +50,8 @@ public class DankeUtil {
 //                        .data("landlord_phone", "15261822164")
                         .data("xiaoqu_id", compounId.toString())
                         .execute();
-                System.err.println("x>>  " + hsReportData);
                 if(execute.body().contains("房源已成功提交")) {
-                    log.info("成功提交：" + hsReportData);
+                    System.err.println("成功提交：  " + hsReportData);
                 }
 //                System.err.println(execute.body());
             } catch (Exception e) {
@@ -86,6 +85,7 @@ public class DankeUtil {
                    return jsonObject.getInteger("id");
                }
            }
+           log.info(city + "-------" + compoundName + "-------未找到小区id");
            return null;
        } catch (Exception e) {
             log.info("获取小区失败： " + city + "---" + compoundName);

@@ -1,9 +1,9 @@
 package com.hs.reptilian.task;
 
 import com.hs.reptilian.constant.UrlConstant;
-import com.hs.reptilian.model.ReptilianList;
 import com.hs.reptilian.service.ReptilianService;
-import com.hs.reptilian.task.runnable.ReptilianRunnable;
+import com.hs.reptilian.task.runnable.DysjSpiderRunnable;
+import com.hs.reptilian.task.runnable.FtxSpiderRunnable;
 import com.hs.reptilian.util.ProxyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +12,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -36,10 +33,34 @@ public class ReptilianTask {
     @Async
     @Scheduled(cron = "${sync.hs.cron}")
     public void syncHsWithDysj() {
-        log.info("开始爬取第一时间数据");
-        for (UrlConstant.Dysj dysj : UrlConstant.Dysj.values()) {
-            taskExecutor.execute(new ReptilianRunnable(dysj, proxyUtil));
-        }
+        log.info("开始爬取第一时间数据" + new Date().toLocaleString() + "---" + Thread.currentThread().getName() + "---start");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (UrlConstant.Dysj dysj : UrlConstant.Dysj.values()) {
+                    taskExecutor.execute(new DysjSpiderRunnable(dysj, proxyUtil));
+                }
+            }
+        }).start();
+        log.info("结束爬取第一时间数据" + new Date().toLocaleString() + "---" + Thread.currentThread().getName() + "---end");
+    }
+
+    /**
+     * 定时爬取房天下数据
+     */
+    @Async
+    @Scheduled(cron = "${sync.hs.cron}")
+    public void syncHsWithFtx() {
+        log.info("开始爬取房天下" + new Date().toLocaleString() + "---" + Thread.currentThread().getName() + "---start");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (UrlConstant.FangTianXia ftx : UrlConstant.FangTianXia.values()) {
+                    taskExecutor.execute(new FtxSpiderRunnable(ftx, proxyUtil));
+                }
+            }
+        }).start();
+        log.info("结束爬取第一时间数据" + new Date().toLocaleString() + "---" + Thread.currentThread().getName() + "---end");
     }
 
 }

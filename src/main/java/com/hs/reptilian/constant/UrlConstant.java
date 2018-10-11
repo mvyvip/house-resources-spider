@@ -2,6 +2,46 @@ package com.hs.reptilian.constant;
 
 public interface UrlConstant {
 
+    enum FangTianXia {
+
+         GZ("http://gz.zu.fang.com/house/a21-h316-i32-n31/", "广州市"),
+
+//        SH("http://sh.zu.fang.com/house/a21-h31-i32-n31/", "上海市"),
+
+//        BJ("http://zu.fang.com/house/a21-h31-n31/", "北京市"),
+
+         SZ("http://sz.zu.fang.com/house/a21-h316-n31/", "深圳市"),
+
+         TJ("http://tj.zu.fang.com/house/a21-h316-n31/", "天津市"),
+
+         NJ("http://nanjing.zu.fang.com/house/a21-h316-n31/", "南京市"),
+
+        ;
+
+
+        private String url;
+
+        private String city;
+
+        FangTianXia(String url, String city) {
+            this.url = url;
+            this.city = city;
+        }
+
+        public String getCity() {
+            return city;
+        }
+
+        public String getCityPrefix() {
+            // TODO 北京需要特殊处理
+            return url.split("//")[1].split("\\.")[0];
+        }
+
+        public String getUrl() {
+            return url;
+        }
+    }
+
     enum Dysj {
 
         GZ("http://gz.01fy.cn/rent/list_2_0_0_0-0_0_0-0_0_0_0_0_0_0_2_0_1_.html", "广州市"),
