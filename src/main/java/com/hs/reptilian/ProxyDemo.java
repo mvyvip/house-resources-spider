@@ -69,6 +69,11 @@ public class ProxyDemo
     public static void main(String[] args) throws Exception
     {
 
+
+        String s = "<a gjalog=\"/site_tuiguang/trace@atype=show|click@business=true@gjaddata={2:{1:{13:3574373716}}}\" gjalog_fang=\"/fang/fang1/detail@datano=13@post_at=1538795108@refresh_at=1538795108 @post_id=@agent=1@puid=3574373716@tuiguang=1@ad_type=10@ver=a\" href=\"http://short.58.com/zd_p/59eb53b4-f478-4349-9546-ffff792484b9/?target=fe-bmocj-xgk_imob7_8105808079q-eyk&amp;end=end\" title=\"办公员工宿舍 适合公司员工入住简单办公 随时看房\" class=\"js-title value title-font\" target=\"_blank\">办公员工宿舍 适合公司员工入住简单办公 随时看房</a>";
+        String[] split = s.split("}}}")[0].split("\\{");
+        System.out.println(split[split.length - 1].split(":")[1] + "x");
+
 //        Connection.Response execute = Jsoup.connect("https://www.dankegongyu.com/u/house-resource/auto-xiaoqu-name?city=%E5%B9%BF%E5%B7%9E%E5%B8%82&q=%E7%BF%A0&_=1538835368978")
 //                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
 //                .header("Cookie", "Hm_lpvt_814ef98ed9fc41dfe57d70d8a496561d=1538835369; Hm_lvt_814ef98ed9fc41dfe57d70d8a496561d=1538831662; _ga=GA1.2.1512744423.1538832033; _gid=GA1.2.85379723.1538832033; CNZZDATA1271579284=697777463-1538826604-%7C1538832005; XSRF-TOKEN=eyJpdiI6InVzODh0M1wvQ3BpVk5hb0Q0ZEJHSTNBPT0iLCJ2YWx1ZSI6IjBzZVJWYlBjQVBhZDdiNzk2NkQ5NXRiZDZ4YU5vSCtoTXY3SW1BXC9GYmE4Nll1dTZuOXhrTEdWM3p2bGxpTk1Fc3A2UHhqZUdoS1pXamUxNzIwQ1d2Zz09IiwibWFjIjoiYzExMjY1YTgzOGIyNGI5MWZkZjExMzM2MjMwODZhMzgwNGM5ZDQyMTQyODc5OTk0YjdkNGE5MDcxNDUwOTc2NyJ9; session=eyJpdiI6IkwwaGNnVHUxcTJPXC9jVXo0NGNoclh3PT0iLCJ2YWx1ZSI6ImV1Z0w3RHpPaEJjRWtCUXpmaEU5ZGFtVDB3Z1E0TkVqdm1VMFwvaEc3bXVBbWNhaHY1bktraVFnUktcL1llcWx1NEdraTg4SFYxNXFzNDFcL1d2cnltOFh3PT0iLCJtYWMiOiI3MjU0YzIxYmZlNWZjNjY2MzY0Yzg3YTMyYjc3MWNiNTE5YzVlZDNkYjI2ODU3MjhhYjM3MjRjNjBlMGFmZjBmIn0%3D; _gat=1; externalHouseRecorderPassengerClose=true; UM_distinctid=1664983bc20113-02217f114ca7ee-664b2f6c-3d10d-1664983bc214aa; TY_SESSION_ID=f541f901-e0a1-493d-a66c-f6bd3bdf463f")
