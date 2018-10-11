@@ -59,8 +59,18 @@ public class TestSpider {
                 Document infoDc = Jsoup.connect("http://3g.ganji.com/hz_fang1/" + id)
                         .timeout(SystemConstant.TIME_OUT)
 //                        .proxy(proxyUtil.getProxy())
-//                        .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("14.106.106.74", 46002)))
+                        .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("221.223.91.178", 8060)))
                         .execute().parse();
+
+                /***
+
+
+
+                 :
+
+                 *
+                 */
+
 //                System.out.println(infoDc);
                 if(infoDc.toString().contains("访问过于频繁")) {
                     System.out.println("访问过于频繁");
