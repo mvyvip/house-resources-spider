@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.hs.reptilian.constant.SystemConstant;
 import com.hs.reptilian.constant.UrlConstant;
 import com.hs.reptilian.constant.UrlConstant.FangTianXia;
+import com.hs.reptilian.constant.UrlConstant.GanJiWang;
 import com.hs.reptilian.model.HsReportData;
 import com.hs.reptilian.util.DankeUtil;
 import java.io.IOException;
@@ -28,9 +29,13 @@ public class TestSpider {
 
         ProxyUtil proxyUtil = new ProxyUtil();
 
+        for (GanJiWang ganJiWang : GanJiWang.values()) {
+            System.out.println(ganJiWang.getUrl());
+        }
+
         Document document = Jsoup.connect("http://sh.ganji.com/fang1/a1m1/")
             .timeout(SystemConstant.TIME_OUT)
-            .proxy(proxyUtil.getProxy())
+//            .proxy(proxyUtil.getProxy())
             .execute().parse();
 
         if(document.toString().contains("访问过于频繁")) {
@@ -59,17 +64,8 @@ public class TestSpider {
                 Document infoDc = Jsoup.connect("http://3g.ganji.com/hz_fang1/" + id)
                         .timeout(SystemConstant.TIME_OUT)
 //                        .proxy(proxyUtil.getProxy())
-                        .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("221.223.91.178", 8060)))
+//                        .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("221.223.91.178", 8060)))
                         .execute().parse();
-
-                /***
-
-
-
-                 :
-
-                 *
-                 */
 
 //                System.out.println(infoDc);
                 if(infoDc.toString().contains("访问过于频繁")) {

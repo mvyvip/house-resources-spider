@@ -2,6 +2,46 @@ package com.hs.reptilian.constant;
 
 public interface UrlConstant {
 
+    enum GanJiWang {
+
+        GZ("http://gz.ganji.com/fang1/a1m1/", "广州市"),
+
+        /** 北京暂时未开放 */
+//        BJ("http://gz.ganji.com/fang1/a1m1/", "北京市"),
+
+        NJ("http://nj.ganji.com/fang1/a1m1/", "南京市"),
+
+        SH("http://sh.ganji.com/fang1/a1m1/", "上海市"),
+
+        SZ("http://sz.ganji.com/fang1/a1m1/", "深圳市"),
+
+        TJ("http://tj.ganji.com/fang1/a1m1/", "天津市"),
+        ;
+
+        private String url;
+
+        private String city;
+
+        GanJiWang(String url, String city) {
+            this.url = url;
+            this.city = city;
+        }
+
+        public String getCity() {
+            return city;
+        }
+
+        public String getCityPrefix() {
+            // TODO 北京需要特殊处理
+            return url.split("//")[1].split("\\.")[0];
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+    }
+
     enum FangTianXia {
 
          GZ("http://gz.zu.fang.com/house/a21-h316-i32-n31/", "广州市"),
