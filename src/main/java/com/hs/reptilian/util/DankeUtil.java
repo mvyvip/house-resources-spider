@@ -14,9 +14,9 @@ import java.net.URLEncoder;
 @Component
 public class DankeUtil {
 
-    private static String token = "zMOlXOxUubPDsnjLJEFQDOkjYvxBx2fEtePsDxhF";
+    private static String token = "S3VHSS5RMG3aDKDnR4EYPXAqwoxEgypq3cQYF5uA";
 
-    private static String cookie = "XSRF-TOKEN=eyJpdiI6IkVuSmJSMnVjRVFra2R2bUxYNjNvK3c9PSIsInZhbHVlIjoiQXd5ZytNeGlucG5hTDdLdUxoQzd3ZlNHMndqN3huZFBBcWxvN1wvWWV1WHRZeDNSWTlhZ2xkOWtGcmRFZnFZR2R2ZkxOZEcwMHpjNjBcLzJEdzNxbHFuUT09IiwibWFjIjoiOGEzNWRjNzVlNzgzZTM4YTc3NTAyYTU2YjNjYjAwNDk4ZDgxOTZiYjZkZGIwMGVmZDhiODYxMTA4ZDgyY2U2ZSJ9; session=eyJpdiI6IlZBRGxlcnFEdnBIYXhtblwvempYSDRnPT0iLCJ2YWx1ZSI6IlFQUHRhS2s3TWw3dmpENTJNZmk2eXc5cE14R21DTEdvQjdwTUErbFkzYUVhZXdoc3VsK0EydjgzRWRwWWJBclwvZkRPQ1hrT29jdVBBRHhJRE5yTm9HQT09IiwibWFjIjoiYTJmYTU3NDVlNzU0ZTVkYzg1Y2ZhZWRjMmMyNzgzMDQxODhkMzlkZjI1YzllOWEwNjNlNjNhNTU0YmQ5Yjc2ZSJ9; Hm_lpvt_814ef98ed9fc41dfe57d70d8a496561d=1539182671; Hm_lvt_814ef98ed9fc41dfe57d70d8a496561d=1539182265; CNZZDATA1271579284=1755457723-1539182065-%7C1539182065; externalHouseRecorderPassengerClose=true; UM_distinctid=1665e698311111-0d628fef6846de-1f0a1108-3d10d-1665e698313cf; TY_SESSION_ID=0d1876e6-86bf-4ed2-bd87-31140a704b6b";
+    private static String cookie = "XSRF-TOKEN=eyJpdiI6Imx5MFdkUE1TUSsyeXFmbHlcL3hLQXhRPT0iLCJ2YWx1ZSI6IlFNeGt0KzdreW9rRjRrY1hmNWdNYjBNanBXVlp4VW1ZYmd4NW45ZmFNTDVoYU45V2tuTm0zM0VqNThLcTlMTHJEeElnRHNMYVgwMlRuWkF2dzNhNEJnPT0iLCJtYWMiOiJmMzUxM2I2MzMxZjAyYTc0N2ZkNjhiM2RiOTM4YzE4MmI1YWU5ODc3YTE4YjFhZjk0ZDM2MzhkNGEwMTQ0ZTE2In0%3D; session=eyJpdiI6InlwblFRNU8zVjdmN0JWdXl0bmxUanc9PSIsInZhbHVlIjoiZFhITDZyTE1zbG1tZklQUzZ0QlFwWHM0TDE5NkZ5TVlRZVdPVkErVG8yQkVHTGpsc0JcL1hBelVBSEFpa05QSDRjMVdWcys5MkcrVDd1VFBRYkNOMnVnPT0iLCJtYWMiOiIxNGFjOGExOTA1YmM3ZjQ5MTY4OGUzZTJiNTdlOTFiZGFmYzZkNmM0MjBkMDY1ZGVhNzg3MTNjOTY4N2ZlYTllIn0%3D; Hm_lpvt_814ef98ed9fc41dfe57d70d8a496561d=1539618921; Hm_lvt_814ef98ed9fc41dfe57d70d8a496561d=1539618906; _ga=GA1.2.1245987942.1539618907; _gid=GA1.2.221771031.1539618907; CNZZDATA1271579284=1976771847-1539617792-%7C1539617792; userTipCloseMethod=close; externalHouseRecorderPassengerClose=true; UM_distinctid=166787021857fe-04696eba350eaf8-1f0a1108-3d10d-166787021861e1; TY_SESSION_ID=a8f546ca-e0f8-4b21-af84-b1b299f0f715";
 
     /**
      * 上传数据到蛋壳
@@ -100,7 +100,7 @@ public class DankeUtil {
                hsReportData.setCity("北京市");
                hsReportData.setUsername("测试不打电话");
                hsReportData.setCompoundName("松榆西里");
-               hsReportData.setMobile("18922353613");
+               hsReportData.setMobile("13922353613");
                DankeUtil.report(hsReportData);
                Thread.sleep(60 * 1000 * 7);
            } catch (Exception e) {

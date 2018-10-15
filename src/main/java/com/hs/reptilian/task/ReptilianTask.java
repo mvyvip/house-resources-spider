@@ -4,6 +4,7 @@ import com.hs.reptilian.constant.UrlConstant;
 import com.hs.reptilian.service.ReptilianService;
 import com.hs.reptilian.task.runnable.DysjSpiderRunnable;
 import com.hs.reptilian.task.runnable.FtxSpiderRunnable;
+import com.hs.reptilian.task.runnable.GanjiRunnable;
 import com.hs.reptilian.util.ProxyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class ReptilianTask {
      * 定时爬取第一时间房源网
      */
     @Async
-    @Scheduled(cron = "${sync.hs.cron}")
+//    @Scheduled(cron = "${sync.hs.cron}")
     public void syncHsWithDysj() {
         log.info("开始爬取第一时间数据" + new Date().toLocaleString() + "---" + Thread.currentThread().getName() + "---start");
         new Thread(new Runnable() {
@@ -49,7 +50,7 @@ public class ReptilianTask {
      * 定时爬取房天下数据
      */
     @Async
-    @Scheduled(cron = "${sync.hs.cron}")
+//    @Scheduled(cron = "${sync.hs.cron}")
     public void syncHsWithFtx() {
         log.info("开始爬取房天下" + new Date().toLocaleString() + "---" + Thread.currentThread().getName() + "---start");
         new Thread(new Runnable() {
@@ -61,6 +62,24 @@ public class ReptilianTask {
             }
         }).start();
         log.info("结束爬取第一时间数据" + new Date().toLocaleString() + "---" + Thread.currentThread().getName() + "---end");
+    }
+
+    /**
+     * 定时爬取赶集网
+     */
+    @Async
+    @Scheduled(cron = "${sync.hs.cron}")
+    public void syncHsWithGanji() {
+        log.info("开始爬取赶集网" + new Date().toLocaleString() + "---" + Thread.currentThread().getName() + "---start");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (UrlConstant.GanJiWang gjw : UrlConstant.GanJiWang.values()) {
+                    taskExecutor.execute(new GanjiRunnable(gjw, proxyUtil));
+                }
+            }
+        }).start();
+        log.info("结束爬取赶集网数据" + new Date().toLocaleString() + "---" + Thread.currentThread().getName() + "---end");
     }
 
 }

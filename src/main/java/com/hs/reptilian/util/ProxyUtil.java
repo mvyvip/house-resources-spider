@@ -13,12 +13,15 @@ import org.springframework.stereotype.Component;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Component
 public class ProxyUtil {
 
     private List<ProxyEntity> proxyEntities = new ArrayList<>();
+
+    private volatile AtomicInteger index = new AtomicInteger(0);
 
     public List<ProxyEntity> initIps() {
       try {
@@ -51,9 +54,11 @@ public class ProxyUtil {
                 iterator.remove();
             }
         }
-
-        Collections.shuffle(proxyEntities);
-        ProxyEntity proxyEntity = proxyEntities.get(0);
+        if(index.get() >= proxyEntities.size()) {
+            index.set(0);
+        }
+        ProxyEntity proxyEntity = proxyEntities.get(index.get());
+        index.incrementAndGet();
         log.info("proxy > " + proxyEntity.getIp() + ":"+ proxyEntity.getPort());
         return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyEntity.getIp(), proxyEntity.getPort()));
     }
