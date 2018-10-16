@@ -1,10 +1,12 @@
 package com.hs.reptilian.model;
 
 
+import lombok.Data;
 import org.apache.commons.lang3.time.DateUtils;
 
 import java.util.Date;
 
+@Data
 public class ProxyEntity {
 
     public ProxyEntity(String ip, Integer port, Date expireTime) {
@@ -19,6 +21,7 @@ public class ProxyEntity {
 
     private Date expireTime;
 
+    private int status;
 
     public String getIp() {
         return ip;

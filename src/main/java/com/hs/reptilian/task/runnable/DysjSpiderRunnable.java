@@ -46,21 +46,21 @@ public class DysjSpiderRunnable implements Runnable {
     }
 
     @Override
-    public void run()  {
-            log.info(Thread.currentThread().getName() + "  start........................." + new Date().toLocaleString() + "----" + dysj.name());
-            Document document = getMainPage();
-            Elements elements = document.getElementById("list").getElementsByTag("li");
-            for (Element element : elements) {
-                // TODO 异常重试
-                HsReportData hsReportData = buidHsReportData(element.getElementsByTag("a").attr("href"));
-                System.out.println(">>>> " + hsReportData);
-                if(hsReportData != null) {
-                    hsReportData.setCity(dysj.getCity());
-                    DankeUtil.report(hsReportData);
-                }
+    public void run() {
+        log.info(Thread.currentThread().getName() + "  start........................." + new Date().toLocaleString() + "----" + dysj.name());
+        Document document = getMainPage();
+        Elements elements = document.getElementById("list").getElementsByTag("li");
+        for (int i = 0; i < SystemConstant.LAST_COUNT; i++) {
+            Element element = elements.get(i);
+            // TODO 异常重试
+            HsReportData hsReportData = buidHsReportData(element.getElementsByTag("a").attr("href"));
+            System.out.println(">>>> " + hsReportData);
+            if (hsReportData != null) {
+                hsReportData.setCity(dysj.getCity());
+                DankeUtil.report(hsReportData);
             }
-
-            log.info(Thread.currentThread().getName() + "  end........................." + new Date().toLocaleString());
+        }
+        log.info(Thread.currentThread().getName() + "  end........................." + new Date().toLocaleString());
     }
 
     private HsReportData buidHsReportData(String url) {
@@ -70,7 +70,7 @@ public class DysjSpiderRunnable implements Runnable {
                     .proxy(proxy)
                     .timeout(20000)
                     .execute().parse();
-            if(document.body().text().contains("请您输入验证码")) {
+            if (document.body().text().contains("请您输入验证码")) {
                 log.info("该代理已被禁，重试中");
                 proxyUtil.remove(proxy);
                 return buidHsReportData(url);
@@ -82,17 +82,17 @@ public class DysjSpiderRunnable implements Runnable {
             for (Element dl : dls) {
                 String text = dl.text();
 
-                if(text.contains("租金价格")) {
+                if (text.contains("租金价格")) {
                     //TODO 价格过滤
                 }
 
-                if(text.contains("小区名称")) {
+                if (text.contains("小区名称")) {
                     hsReportData.setCompoundName(text.split("小区名称： ")[1]);
-                }  else if(text.contains("联系人")) {
+                } else if (text.contains("联系人")) {
                     hsReportData.setUsername(text.split("联系人： ")[1]);
-                } else if(text.contains("联系电话")) {
+                } else if (text.contains("联系电话")) {
                     String mobile = text.split("联系电话： ")[1].replaceAll(" ", "");
-                    if(mobile.contains("该房源来自58同城网") || mobile.contains("隐藏电话")) {
+                    if (mobile.contains("该房源来自58同城网") || mobile.contains("隐藏电话")) {
                         return null;
                     }
                     hsReportData.setMobile(mobile);
@@ -100,10 +100,10 @@ public class DysjSpiderRunnable implements Runnable {
             }
             return hsReportData;
         } catch (Exception e) {
-            if(e instanceof HttpStatusException) {
+            if (e instanceof HttpStatusException) {
                 HttpStatusException httpStatusException = (HttpStatusException) e;
                 log.info("初始化数据出错：" + httpStatusException.getStatusCode() + "--" + httpStatusException.getUrl() + "---" + httpStatusException.getMessage());
-                if(httpStatusException.getStatusCode() == 404) {
+                if (httpStatusException.getStatusCode() == 404) {
                     return null;
                 }
             }

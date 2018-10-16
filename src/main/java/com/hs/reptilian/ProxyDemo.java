@@ -69,10 +69,11 @@ public class ProxyDemo
     public static void main(String[] args) throws Exception
     {
 
-
-        String s = "<a gjalog=\"/site_tuiguang/trace@atype=show|click@business=true@gjaddata={2:{1:{13:3574373716}}}\" gjalog_fang=\"/fang/fang1/detail@datano=13@post_at=1538795108@refresh_at=1538795108 @post_id=@agent=1@puid=3574373716@tuiguang=1@ad_type=10@ver=a\" href=\"http://short.58.com/zd_p/59eb53b4-f478-4349-9546-ffff792484b9/?target=fe-bmocj-xgk_imob7_8105808079q-eyk&amp;end=end\" title=\"办公员工宿舍 适合公司员工入住简单办公 随时看房\" class=\"js-title value title-font\" target=\"_blank\">办公员工宿舍 适合公司员工入住简单办公 随时看房</a>";
-        String[] split = s.split("}}}")[0].split("\\{");
-        System.out.println(split[split.length - 1].split(":")[1] + "x");
+        Connection.Response execute = Jsoup.connect("http://test.abuyun.com/proxy.php")
+                .timeout(20000)
+                .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("175.165.210.34", 4274)))
+                .execute();
+        System.out.println(execute.body());
 
 //        Connection.Response execute = Jsoup.connect("https://www.dankegongyu.com/u/house-resource/auto-xiaoqu-name?city=%E5%B9%BF%E5%B7%9E%E5%B8%82&q=%E7%BF%A0&_=1538835368978")
 //                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")

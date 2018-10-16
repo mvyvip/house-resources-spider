@@ -5,8 +5,10 @@ import com.hs.reptilian.constant.SystemConstant;
 import com.hs.reptilian.constant.UrlConstant;
 import com.hs.reptilian.model.HsReportData;
 import com.hs.reptilian.util.DankeUtil;
+import com.hs.reptilian.util.PandaProxyUtil;
 import com.hs.reptilian.util.ProxyUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,73 +20,81 @@ public class GanjiRunnable implements Runnable {
 
     private UrlConstant.GanJiWang gjw;
 
-    private ProxyUtil proxyUtil;
+//    private ProxyUtil proxyUtil;
 
     public GanjiRunnable(UrlConstant.GanJiWang gjw, ProxyUtil proxyUtil) {
         this.gjw = gjw;
-        this.proxyUtil = proxyUtil;
+//        this.proxyUtil = proxyUtil;
     }
 
     @Override
     public void run() {
-        try {
-            Document document = getCityInfo(gjw.getUrl());
-            Elements dls = document.select("div.f-main.f-clear.f-w1190").get(0).getElementsByTag("dl");
-            /** 第一个是广告 */
-            dls.remove(0);
-            for (Element dl : dls) {
-                // TODO 暂时只爬个人的 58的后面添加  这里会返回三种房源 公寓 个人 和 58的
-                String href = dl.getElementsByTag("a").get(1).attr("href");
-                if(!href.contains("legoc")) {
-                    String id = "";
-                    if(href.contains("short")) {
-                        String[] split = dl.toString().split("}}}")[0].split("\\{");
-                        id = split[split.length - 1].split(":")[1] + "x";
-                    } else {
-                        id = href.split("/")[2].split("\\.")[0];
-                    }
-                    System.out.println("http://3g.ganji.com/hz_fang1/" + id);
-                    Document infoDc = getHsInfo(id);
-                    if(!infoDc.toString().contains("data-encryption")) {
-                        System.out.println("特殊  要登录才能看");
-                        continue;
-                    }
-
-                    Elements tagA = infoDc.getElementsByTag("a");
-                    for (Element element : tagA) {
-                        if(StringUtils.isNotEmpty(element.attr("data-encryption"))) {
-                            HsReportData hsReportData = new HsReportData();
-                            String body = getPhoneBody(element, id);
-                            Elements span = infoDc.getElementsByTag("span");
-                            for (Element s : span) {
-                                if(s.toString().contains("(个人)")) {
-                                    hsReportData.setUsername(s.text().split(" ")[0].replaceAll("\\(个人\\)", ""));
+        Elements dls = getCityInfo(gjw.getUrl(), SystemConstant.RETRY_COUNT);
+        if(CollectionUtils.isNotEmpty(dls)) {
+            for (int i = 0; i < 2; i++) {
+                Element dl = dls.get(i);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String href = dl.getElementsByTag("a").get(1).attr("href");
+                        if (!href.contains("legoc")) {
+                            String id = "";
+                            if (href.contains("short")) {
+                                String[] split = dl.toString().split("}}}")[0].split("\\{");
+                                id = split[split.length - 1].split(":")[1] + "x";
+                            } else {
+                                id = href.split("/")[2].split("\\.")[0];
+                            }
+                            System.out.println("http://3g.ganji.com/hz_fang1/" + id);
+                            Document infoDc = getHsInfo(id, SystemConstant.RETRY_COUNT);
+                            if (!infoDc.toString().contains("data-encryption")) {
+                                log.info("url: {}, 特殊  要登录才能看", "http://3g.ganji.com/hz_fang1/" + id);
+                            } else {
+                                Elements tagA = infoDc.getElementsByTag("a");
+                                for (Element element : tagA) {
+                                    if (StringUtils.isNotEmpty(element.attr("data-encryption"))) {
+                                        HsReportData hsReportData = new HsReportData();
+                                        String body = getPhoneBody(element, id);
+                                        Elements span = infoDc.getElementsByTag("span");
+                                        for (Element s : span) {
+                                            if (s.toString().contains("(个人)")) {
+                                                hsReportData.setUsername(s.text().split(" ")[0].replaceAll("\\(个人\\)", ""));
+                                            }
+                                        }
+                                        hsReportData.setMobile(JSONObject.parseObject(body).getString("secret_phone"));
+                                        hsReportData.setCompoundName(infoDc.text().split("小区：")[1].split(" ")[0].split("\\(")[0]);
+                                        if (hsReportData != null) {
+                                            hsReportData.setCity(gjw.getCity());
+                                            System.err.println(">>>> " + hsReportData);
+                                            DankeUtil.report(hsReportData);
+                                        }
+                                        break;
+                                    }
                                 }
                             }
-                            hsReportData.setMobile(JSONObject.parseObject(body).getString("secret_phone"));
-                            hsReportData.setCompoundName(infoDc.text().split("小区：")[1].split(" ")[0].split("\\(")[0]);
-
-                            if(hsReportData != null) {
-                                hsReportData.setCity(gjw.getCity());
-                                System.err.println(">>>> " + hsReportData);
-                                DankeUtil.report(hsReportData);
-                            }
-                            break;
                         }
                     }
-                    System.out.println("-----------------------------------------------");
-//                return;
-                }
+                }).start();
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
-
     }
 
-    private Document getHsInfo(String id) {
+    public String getPhoneBody(Element element, String id) {
+        try {
+            String body = Jsoup.connect("http://3g.ganji.com/ajax/?module=secret_GetSecretPhone&dir=secret&a=json&version=4&user_id=&" +
+                    "phone=" + element.attr("data-encryption") + "&puid=" + id + "&major_index=fang1&safe_no=0")
+                    .proxy(PandaProxyUtil.getProxy())
+                    .timeout(SystemConstant.TIME_OUT)
+                    .execute().body();
+            System.out.println("xxx>>>> " + body);
+            return body;
+        } catch (Exception e) {
+            return getPhoneBody(element, id);
+        }
+    }
+
+
+    private Document getHsInfo(String id, int retryCount) {
         try {
             Document parse = Jsoup.connect("http://3g.ganji.com/hz_fang1/" + id)
                     .timeout(SystemConstant.TIME_OUT)
@@ -97,46 +107,44 @@ public class GanjiRunnable implements Runnable {
                     .header("Host", "3g.ganji.com")
                     .header("Upgrade-Insecure-Requests", "1")
                     .header("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1")
-                    .proxy(proxyUtil.getProxy())
+                    .proxy(PandaProxyUtil.getProxy())
                     .execute().parse();
             if(parse.toString().contains("访问过于频繁")) {
                 log.info("查看详情代理被封");
-                return getHsInfo(id);
+                return getHsInfo(id, retryCount);
             }
             return parse;
         } catch (Exception e) {
-            return getCityInfo(id);
+            if(retryCount <= 0) {
+                log.info("getHsInfo 超过错误最大次数: {}", e.getMessage());
+                return null;
+            }
+            return getHsInfo(id, retryCount);
         }
     }
 
-    private Document getCityInfo(String url) {
+    private Elements getCityInfo(String url, int retryCount) {
         try {
-            Document document = Jsoup.connect("http://sh.ganji.com/fang1/a1m1/")
+            Document document = Jsoup.connect(url)
                     .timeout(SystemConstant.TIME_OUT)
-                    .proxy(proxyUtil.getProxy())
+//                    .proxy(proxyUtil.getProxy())
+                    .proxy(PandaProxyUtil.getProxy())
                     .execute().parse();
             if(document.toString().contains("访问过于频繁")) {
                 log.info("获取城市列表代理被封");
-                return getCityInfo(url);
+                return getCityInfo(url, 3);
             }
-            return document;
+            Elements dls = document.select("div.f-main.f-clear.f-w1190").get(0).getElementsByTag("dl");
+            dls.remove(0);
+            return dls;
         } catch (Exception e) {
-            log.error("获取：{} -- 信息失败, 错误信息： {}", url, e.getMessage());
-            return getCityInfo(url);
+            if(retryCount > 0) {
+                return getCityInfo(url, --retryCount);
+            }
+            log.error("获取：{} -- 超过最大次数： {}", url, e.getMessage());
+            return null;
         }
     }
 
-    public String getPhoneBody(Element element, String id) {
-       try {
-           String body = Jsoup.connect("http://3g.ganji.com/ajax/?module=secret_GetSecretPhone&dir=secret&a=json&version=4&user_id=&" +
-                   "phone=" + element.attr("data-encryption") + "&puid=" + id + "&major_index=fang1&safe_no=0")
-                   .proxy(proxyUtil.getProxy())
-                   .timeout(SystemConstant.TIME_OUT)
-                   .execute().body();
-           System.out.println("xxx>>>> " + body);
-           return body;
-       } catch (Exception e) {
-           return getPhoneBody(element, id);
-       }
-    }
+
 }

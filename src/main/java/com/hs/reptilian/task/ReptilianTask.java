@@ -68,7 +68,7 @@ public class ReptilianTask {
      * 定时爬取赶集网
      */
     @Async
-    @Scheduled(cron = "${sync.hs.cron}")
+    @Scheduled(cron = "${sync.hs.gjw}")
     public void syncHsWithGanji() {
         log.info("开始爬取赶集网" + new Date().toLocaleString() + "---" + Thread.currentThread().getName() + "---start");
         new Thread(new Runnable() {

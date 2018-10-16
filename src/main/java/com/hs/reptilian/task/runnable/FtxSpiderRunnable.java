@@ -48,11 +48,13 @@ public class FtxSpiderRunnable implements Runnable {
             try {
                 System.out.println(fangTianXia + "---" + fangTianXia.getCityPrefix());
                 Elements dls = getMainPage();
-                for (Element dl : dls) {
+                for (int i = 0; i < SystemConstant.LAST_COUNT; i++) {
+                    int finalI = i;
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
                             try {
+                                Element dl = dls.get(finalI);
                                 Document info = getInfo(dl);
                                 JSONObject jsonObject = JSONObject.parseObject(info.html().split("houseInfo = ")[1].split(";")[0].replaceAll("// new  add by wys", ""));
                                 if(!jsonObject.getString("agentMobile").contains("转")) {
@@ -69,6 +71,9 @@ public class FtxSpiderRunnable implements Runnable {
                             }
                         }
                     }).start();
+                }
+                for (Element dl : dls) {
+
                 }
             } catch (Exception e) {
                 log.error(e.getMessage());
