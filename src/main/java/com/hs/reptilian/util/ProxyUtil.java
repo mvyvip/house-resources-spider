@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 public class ProxyUtil {
 
-    private List<ProxyEntity> proxyEntities = new ArrayList<>();
+    public List<ProxyEntity> proxyEntities = new ArrayList<>();
 
     private volatile AtomicInteger index = new AtomicInteger(0);
 
